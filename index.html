@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="th" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการขาย - Sales Orders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96%;
+            --secondary-foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 96%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96%;
+            --accent-foreground: 222.2 84% 4.9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --radius: 0.5rem;
+        }
+
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222.2 84% 4.9%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 210 40% 98%;
+            --primary-foreground: 222.2 47.4% 11.2%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 212.7 26.8% 83.9%;
+        }
+
+        * {
+            border-color: hsl(var(--border));
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 28rem;
+            margin: 0 auto;
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: calc(var(--radius) + 2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 0.875rem;
+        }
+
+        .controls-section {
+            background-color: hsl(var(--muted));
+            padding: 1.5rem;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid transparent;
+            cursor: pointer;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn-primary {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            border-color: hsl(var(--primary));
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: hsl(var(--primary) / 0.9);
+        }
+
+        .btn-secondary {
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            border-color: hsl(var(--border));
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: hsl(var(--secondary) / 0.8);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid hsl(var(--muted));
+            border-top: 2px solid hsl(var(--primary));
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background-color: hsl(var(--border));
+        }
+
+        .stat-item {
+            background-color: hsl(var(--card));
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .stat-number {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: hsl(var(--foreground));
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+            margin-top: 0.25rem;
+        }
+
+        .orders-container {
+            padding: 1.5rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .order-card {
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            padding: 1rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transform: translateY(-1px);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .order-number {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: calc(var(--radius) / 2);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .badge-success {
+            background-color: hsl(142.1 76.2% 36.3% / 0.1);
+            color: hsl(142.1 70.6% 45.3%);
+            border: 1px solid hsl(142.1 76.2% 36.3% / 0.2);
+        }
+
+        .badge-warning {
+            background-color: hsl(45.4 93.4% 47.5% / 0.1);
+            color: hsl(45.4 93.4% 47.5%);
+            border: 1px solid hsl(45.4 93.4% 47.5% / 0.2);
+        }
+
+        .badge-destructive {
+            background-color: hsl(var(--destructive) / 0.1);
+            color: hsl(var(--destructive));
+            border: 1px solid hsl(var(--destructive) / 0.2);
+        }
+
+        .badge-purple {
+            background-color: hsl(262.1 83.3% 57.8% / 0.1);
+            color: hsl(262.1 83.3% 57.8%);
+            border: 1px solid hsl(262.1 83.3% 57.8% / 0.2);
+        }
+
+        .order-info {
+            margin-bottom: 0.75rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .info-label {
+            color: hsl(var(--muted-foreground));
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: hsl(var(--foreground));
+            font-weight: 600;
+        }
+
+        .products-section {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid hsl(var(--border));
+        }
+
+        .products-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            margin-bottom: 0.5rem;
+        }
+
+        .product-item {
+            background-color: hsl(var(--muted));
+            border-radius: calc(var(--radius) / 2);
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8125rem;
+        }
+
+        .product-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .product-name {
+            font-weight: 500;
+            color: hsl(var(--foreground));
+            margin-bottom: 0.125rem;
+        }
+
+        .product-qty {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.75rem;
+        }
+
+        .alert {
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin: 1.5rem;
+        }
+
+        .alert-destructive {
+            border-color: hsl(var(--destructive) / 0.5);
+            background-color: hsl(var(--destructive) / 0.1);
+            color: hsl(var(--destructive));
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .no-data i {
+            font-size: 3.75rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .no-data h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: hsl(var(--foreground));
+        }
+
+        .last-updated {
+            text-align: center;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+            background-color: hsl(var(--muted));
+            border-top: 1px solid hsl(var(--border));
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .theme-toggle:hover {
+            background-color: hsl(var(--secondary) / 0.8);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            
+            .container {
+                max-width: 100vw;
+                margin: 0;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+                min-height: 100vh;
+            }
+            
+            .order-card {
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+                border-radius: calc(var(--radius) / 2);
+            }
+            
+            .order-number {
+                font-size: 1rem;
+            }
+
+            .orders-container {
+                padding: 1rem;
+                max-height: calc(100vh - 300px);
+            }
+
+            .theme-toggle {
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+        }
+
+        /* Dark mode styles for better visual contrast */
+        .dark .stats {
+            background-color: hsl(var(--border));
+        }
+
+        .dark .stat-item {
+            background-color: hsl(var(--background));
+        }
+
+        /* Smooth scrollbar */
+        .orders-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .orders-container::-webkit-scrollbar-track {
+            background: hsl(var(--muted));
+        }
+
+        .orders-container::-webkit-scrollbar-thumb {
+            background: hsl(var(--border));
+            border-radius: 3px;
+        }
+
+        .orders-container::-webkit-scrollbar-thumb:hover {
+            background: hsl(var(--muted-foreground));
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i class="fas fa-sun"></i>
+            </button>
+            <h1>รายการขาย</h1>
+            <p>Sales Orders Dashboard</p>
+        </div>
+
+        <div class="controls-section">
+            <button class="btn btn-primary" onclick="loadOrders()">
+                <i class="fas fa-sync-alt" style="margin-right: 0.5rem;"></i>
+                โหลดข้อมูล
+            </button>
+            
+            <div id="refreshSection" style="display: none;">
+                <button class="btn btn-secondary" onclick="refreshOrders()">
+                    <i class="fas fa-redo" style="margin-right: 0.5rem;"></i>
+                    รีเฟรชข้อมูล
+                </button>
+            </div>
+        </div>
+
+        <div id="statsSection" class="stats" style="display: none;">
+            <div class="stat-item">
+                <div class="stat-number" id="totalOrders">0</div>
+                <div class="stat-label">ออร์เดอร์ทั้งหมด</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="paidOrders">0</div>
+                <div class="stat-label">รอโอน</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="pendingOrders">0</div>
+                <div class="stat-label">รอส่ง</div>
+            </div>
+        </div>
+
+        <div id="content">
+            <div class="no-data">
+                <i class="fas fa-inbox"></i>
+                <h3>ยังไม่มีข้อมูล</h3>
+                <p>กรุณาคลิกโหลดข้อมูลเพื่อดูรายการออร์เดอร์</p>
+            </div>
+        </div>
+
+        <div id="lastUpdated" class="last-updated" style="display: none;">
+            อัพเดทล่าสุด: <span id="updateTime">-</span>
+        </div>
+    </div>
+
+    <script>
+        let dataLoaded = false;
+
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.classList.remove(currentTheme);
+            html.classList.add(newTheme);
+            
+            // Save theme preference
+            localStorage.setItem('theme', newTheme);
+            
+            // Update icon
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.querySelector('.theme-toggle i');
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-moon';
+            } else {
+                themeIcon.className = 'fas fa-sun';
+            }
+        }
+
+        // Initialize theme
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function getStatusBadge(status, paymentStatus) {
+            let statusText = '';
+            let statusClass = '';
+            
+            if (paymentStatus === 'Paid') {
+                statusText = 'ชำระแล้ว';
+                statusClass = 'badge-success';
+            } else {
+                statusText = 'ยังไม่ชำระ';
+                statusClass = 'badge-destructive';
+            }
+            
+            return `<span class="badge ${statusClass}">${statusText}</span>`;
+        }
+
+        function getOrderStatusBadge(status) {
+            let statusClass = '';
+            
+            if (status === 'Pending') {
+                statusClass = 'badge-warning';
+            } else if (status === 'waiting' || status === 'Waiting') {
+                statusClass = 'badge-purple';
+            } else {
+                statusClass = 'badge-secondary';
+            }
+            
+            return statusClass;
+        }
+
+        function translateStatus(status) {
+            if (status === 'Pending') {
+                return 'รอโอน';
+            } else if (status === 'waiting' || status === 'Waiting') {
+                return 'รอส่ง';
+            }
+            return status;
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('th-TH', {
+                style: 'currency',
+                currency: 'THB'
+            }).format(amount);
+        }
+
+        function createOrderCard(order) {
+            const products = order.list.map(product => `
+                <div class="product-item" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-qty" style="font-weight: bold;border: 1px solid hsl(var(--border)); padding: 0.25rem 0.5rem; border-radius: calc(var(--radius) / 2); background-color: hsl(var(--background)); font-size: 0.75rem;color: #000000">${product.number}</div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-number">#${order.number}</div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <span class="badge ${getOrderStatusBadge(order.status)}">${translateStatus(order.status)}</span>
+                            ${getStatusBadge(order.status, order.paymentstatus)}
+                        </div>
+                    </div>
+                    <div class="order-info">
+                        <div class="info-row">
+                            <span class="info-label">ช่องทางขาย:</span>
+                            <span class="info-value">${order.saleschannel}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">ยอดรวม:</span>
+                            <span class="info-value">${formatCurrency(order.amount)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">วันที่สั่งซื้อ:</span>
+                            <span class="info-value">${new Date(order.orderdate).toLocaleDateString('th-TH')}</span>
+                        </div>
+                    </div>
+                    <div class="products-section">
+                        <div class="products-title"><i class="fas fa-shopping-bag" style="margin-right: 0.5rem;"></i>สินค้า:</div>
+                        ${products}
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStats(orders) {
+            const totalOrders = orders.length;
+            const pendingOrders = orders.filter(order => order.status === 'Pending').length;
+            const waitingOrders = orders.filter(order => order.status === 'waiting' || order.status === 'Waiting').length;
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('paidOrders').textContent = pendingOrders;
+            document.getElementById('pendingOrders').textContent = waitingOrders;
+            
+            document.getElementById('statsSection').style.display = 'grid';
+        }
+
+        function updateLastUpdated() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('th-TH', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('updateTime').textContent = timeString;
+            document.getElementById('lastUpdated').style.display = 'block';
+        }
+
+        async function loadOrders() {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>กำลังโหลดข้อมูล...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    displayOrders(data.orders);
+                    updateStats(data.orders);
+                    updateLastUpdated();
+                    
+                    // แสดงปุ่ม refresh
+                    document.getElementById('refreshSection').style.display = 'block';
+                    dataLoaded = true;
+                } else {
+                    throw new Error(data.message || 'ไม่สามารถดึงข้อมูลได้');
+                }
+
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showError(`เกิดข้อผิดพลาด: ${error.message}`);
+            }
+        }
+
+        async function refreshOrders() {
+            const refreshBtn = document.querySelector('#refreshSection .btn');
+            const originalHTML = refreshBtn.innerHTML;
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = `
+                <div class="spinner" style="width: 1rem; height: 1rem; margin: 0 0.5rem 0 0;"></div>
+                กำลังรีเฟรช...
+            `;
+
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    displayOrders(data.orders);
+                    updateStats(data.orders);
+                    updateLastUpdated();
+                } else {
+                    throw new Error(data.message || 'ไม่สามารถดึงข้อมูลได้');
+                }
+
+            } catch (error) {
+                console.error('Error refreshing orders:', error);
+                showError(`เกิดข้อผิดพลาดในการรีเฟรช: ${error.message}`);
+            } finally {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = originalHTML;
+            }
+        }
+
+        function displayOrders(orders) {
+            const content = document.getElementById('content');
+            
+            if (orders.length === 0) {
+                content.innerHTML = `
+                    <div class="no-data">
+                        <i class="fas fa-question-circle"></i>
+                        <h3>ไม่มีออร์เดอร์</h3>
+                        <p>ไม่พบข้อมูลออร์เดอร์ตามเงื่อนไขที่กำหนด</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const ordersHTML = orders.map(order => createOrderCard(order)).join('');
+            content.innerHTML = `
+                <div class="orders-container">
+                    ${ordersHTML}
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="alert alert-destructive">
+                    <strong>⚠️ เกิดข้อผิดพลาด</strong><br>
+                    ${message}
+                </div>
+            `;
+        }
+
+        // Initialize theme and auto-load
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            loadOrders();
+        });
+
+        // Auto-refresh ทุก 5 นาที เมื่อมีข้อมูล (ปิดการใช้งาน)
+        // setInterval(() => {
+        //     if (dataLoaded) {
+        //         refreshOrders();
+        //     }
+        // }, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
