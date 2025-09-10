@@ -460,7 +460,7 @@
             </button>
             
             <div id="refreshSection" style="display: none;">
-                <button class="btn btn-secondary" onclick="refreshOrders()">
+                <button class="btn btn-secondary" onclick="loadOrders(true)">
                     <i class="fas fa-redo" style="margin-right: 0.5rem;"></i>
                     รีเฟรชข้อมูล
                 </button>
@@ -638,14 +638,24 @@
             document.getElementById('lastUpdated').style.display = 'block';
         }
 
-        async function loadOrders() {
-            const content = document.getElementById('content');
-            content.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>กำลังโหลดข้อมูล...</p>
-                </div>
-            `;
+        async function loadOrders(isRefresh = false) {
+            if (isRefresh) {
+                const refreshBtn = document.querySelector('#refreshSection .btn');
+                const originalHTML = refreshBtn.innerHTML;
+                refreshBtn.disabled = true;
+                refreshBtn.innerHTML = `
+                    <div class="spinner" style="width: 1rem; height: 1rem; margin: 0 0.5rem 0 0;"></div>
+                    กำลังรีเฟรช...
+                `;
+            } else {
+                const content = document.getElementById('content');
+                content.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>กำลังโหลดข้อมูล...</p>
+                    </div>
+                `;
+            }
 
             try {
                 const response = await fetch('/api/orders', {
@@ -662,52 +672,29 @@
                     updateStats(data.orders);
                     updateLastUpdated();
                     
-                    // แสดงปุ่ม refresh
-                    document.getElementById('refreshSection').style.display = 'block';
-                    dataLoaded = true;
+                    if (!isRefresh) {
+                        // แสดงปุ่ม refresh
+                        document.getElementById('refreshSection').style.display = 'block';
+                        dataLoaded = true;
+                    }
                 } else {
                     throw new Error(data.message || 'ไม่สามารถดึงข้อมูลได้');
                 }
 
             } catch (error) {
                 console.error('Error loading orders:', error);
-                showError(`เกิดข้อผิดพลาด: ${error.message}`);
-            }
-        }
-
-        async function refreshOrders() {
-            const refreshBtn = document.querySelector('#refreshSection .btn');
-            const originalHTML = refreshBtn.innerHTML;
-            refreshBtn.disabled = true;
-            refreshBtn.innerHTML = `
-                <div class="spinner" style="width: 1rem; height: 1rem; margin: 0 0.5rem 0 0;"></div>
-                กำลังรีเฟรช...
-            `;
-
-            try {
-                const response = await fetch('/api/orders', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    displayOrders(data.orders);
-                    updateStats(data.orders);
-                    updateLastUpdated();
-                } else {
-                    throw new Error(data.message || 'ไม่สามารถดึงข้อมูลได้');
-                }
-
-            } catch (error) {
-                console.error('Error refreshing orders:', error);
-                showError(`เกิดข้อผิดพลาดในการรีเฟรช: ${error.message}`);
+                const errorMessage = isRefresh ? `เกิดข้อผิดพลาดในการรีเฟรช: ${error.message}` : `เกิดข้อผิดพลาด: ${error.message}`;
+                showError(errorMessage);
             } finally {
-                refreshBtn.disabled = false;
-                refreshBtn.innerHTML = originalHTML;
+                if (isRefresh) {
+                    const refreshBtn = document.querySelector('#refreshSection .btn');
+                    const originalHTML = `
+                        <i class="fas fa-redo" style="margin-right: 0.5rem;"></i>
+                        รีเฟรชข้อมูล
+                    `;
+                    refreshBtn.disabled = false;
+                    refreshBtn.innerHTML = originalHTML;
+                }
             }
         }
 
