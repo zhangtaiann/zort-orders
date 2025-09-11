@@ -37,10 +37,7 @@ export default async function handler(req, res) {
         console.log(`📡 Fetching products list${keyword ? ` with keyword: "${keyword}"` : ''}`);
 
         // Zortout API URL for products list
-        let apiUrl = `https://open-api.zortout.com/v4/Product/GetProducts?limit=${limit}`;
-        if (keyword) {
-            apiUrl += `&keyword=${encodeURIComponent(keyword)}`;
-        }
+        let apiUrl = `https://open-api.zortout.com/v4/Product/GetProducts?limit=20&keyword=kexcelled`;
         
         const response = await fetch(apiUrl, {
             method: 'GET',
