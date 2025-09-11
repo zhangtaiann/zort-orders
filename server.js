@@ -199,6 +199,64 @@ app.get('/api/product/:id', async (req, res) => {
     }
 });
 
+// API endpoint to get products list with search
+app.get('/api/products', async (req, res) => {
+    try {
+        const { limit = 20, keyword = '' } = req.query;
+        console.log(`📡 Fetching products list${keyword ? ` with keyword: "${keyword}"` : ''}`);
+        
+        // Zortout API URL for products list
+        let apiUrl = `https://open-api.zortout.com/v4/Product/GetProducts?limit=${limit}`;
+        if (keyword) {
+            apiUrl += `&keyword=${encodeURIComponent(keyword)}`;
+        }
+        
+        // Headers for Zortout API
+        const headers = {
+            'storename': STORENAME,
+            'apikey': APIKEY,
+            'apisecret': APISECRET,
+            'Content-Type': 'application/json'
+        };
+        
+        // Make request to Zortout API
+        const response = await makeZortoutRequest(apiUrl, headers);
+        
+        if (response.statusCode !== 200) {
+            return res.status(response.statusCode).json({
+                success: false,
+                message: `API Error: ${response.statusCode} - ตรวจสอบข้อมูล API credentials`
+            });
+        }
+        
+        const data = response.data;
+        
+        if (data.res && data.res.resCode === "200" && data.list) {
+            console.log(`✅ Successfully fetched ${data.list.length} products`);
+            
+            res.json({
+                success: true,
+                products: data.list,
+                count: data.count,
+                timestamp: new Date().toISOString()
+            });
+        } else {
+            return res.status(404).json({
+                success: false,
+                message: data.res?.resDesc || 'ไม่พบข้อมูลสินค้า'
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Products API error:', error);
+        
+        res.status(500).json({
+            success: false,
+            message: `เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์: ${error.message}`
+        });
+    }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({

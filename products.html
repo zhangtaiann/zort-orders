@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายละเอียดสินค้า - Product Details</title>
+    <title>รายการสินค้า - Products List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -84,7 +84,6 @@
             padding: 1.5rem;
             text-align: center;
             border-bottom: 1px solid hsl(var(--border));
-            position: relative;
         }
 
         .header h1 {
@@ -96,28 +95,6 @@
         .header p {
             opacity: 0.8;
             font-size: 0.875rem;
-        }
-
-        .back-button {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: hsl(var(--secondary));
-            color: hsl(var(--secondary-foreground));
-            border: 1px solid hsl(var(--border));
-            border-radius: var(--radius);
-            padding: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .back-button:hover {
-            background-color: hsl(var(--secondary) / 0.8);
         }
 
         .navbar {
@@ -179,7 +156,7 @@
             border-bottom: 1px solid hsl(var(--border));
         }
 
-        .input-group {
+        .search-controls {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 1rem;
@@ -225,6 +202,16 @@
             background-color: hsl(var(--primary) / 0.9);
         }
 
+        .btn-secondary {
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            border-color: hsl(var(--border));
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: hsl(var(--secondary) / 0.8);
+        }
+
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -251,50 +238,70 @@
             100% { transform: rotate(360deg); }
         }
 
-        .product-details {
+        .products-container {
             padding: 1.5rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .product-card {
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            padding: 1rem;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transform: translateY(-1px);
+        }
+
+        .product-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .product-image {
-            width: 100%;
-            max-width: 300px;
-            height: 200px;
+            width: 60px;
+            height: 60px;
             object-fit: cover;
             border-radius: var(--radius);
-            margin-bottom: 1rem;
             border: 1px solid hsl(var(--border));
+            flex-shrink: 0;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 0;
         }
 
         .product-name {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             color: hsl(var(--foreground));
+            line-height: 1.4;
         }
 
-        .product-description {
-            color: hsl(var(--muted-foreground));
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-
-        .price-section {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background-color: hsl(var(--muted));
-            border-radius: var(--radius);
-        }
-
-        .price-item {
-            text-align: center;
-        }
-
-        .price-label {
+        .product-sku {
             font-size: 0.75rem;
             color: hsl(var(--muted-foreground));
             margin-bottom: 0.25rem;
+        }
+
+        .product-category {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .product-price {
+            text-align: right;
+            flex-shrink: 0;
         }
 
         .price-value {
@@ -303,72 +310,29 @@
             color: hsl(var(--foreground));
         }
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .info-item {
-            background-color: hsl(var(--muted));
-            padding: 0.75rem;
-            border-radius: var(--radius);
-        }
-
-        .info-label {
-            font-size: 0.75rem;
-            color: hsl(var(--muted-foreground));
-            margin-bottom: 0.25rem;
-        }
-
-        .info-value {
-            font-weight: 500;
-            color: hsl(var(--foreground));
-        }
-
-        .variants-section {
-            margin-bottom: 1rem;
-        }
-
-        .section-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: hsl(var(--foreground));
-        }
-
-        .variant-item {
+        .stock-info {
             display: flex;
             justify-content: space-between;
-            padding: 0.5rem 0.75rem;
-            background-color: hsl(var(--muted));
-            border-radius: calc(var(--radius) / 2);
-            margin-bottom: 0.25rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid hsl(var(--border));
         }
 
-        .variant-name {
-            font-weight: 500;
-            color: hsl(var(--foreground));
+        .stock-item {
+            text-align: center;
+            flex: 1;
         }
 
-        .variant-value {
-            color: hsl(var(--muted-foreground));
-        }
-
-        .tags-section {
-            margin-bottom: 1rem;
-        }
-
-        .tag {
-            display: inline-block;
-            background-color: hsl(var(--primary) / 0.1);
-            color: hsl(var(--primary));
-            padding: 0.25rem 0.5rem;
-            border-radius: calc(var(--radius) / 2);
+        .stock-label {
             font-size: 0.75rem;
-            margin-right: 0.5rem;
+            color: hsl(var(--muted-foreground));
             margin-bottom: 0.25rem;
+        }
+
+        .stock-value {
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            font-size: 0.875rem;
         }
 
         .alert {
@@ -404,6 +368,13 @@
             color: hsl(var(--foreground));
         }
 
+        .results-info {
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 0;
@@ -436,19 +407,46 @@
                 padding: 0.4rem;
             }
             
-            .back-button {
-                left: 0.5rem;
-                padding: 0.4rem;
+            .product-card {
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
             }
             
-            .info-grid {
-                grid-template-columns: 1fr;
+            .product-header {
+                gap: 0.75rem;
+            }
+            
+            .product-image {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .product-name {
+                font-size: 0.9rem;
+            }
+            
+            .products-container {
+                padding: 1rem;
+                max-height: calc(100vh - 300px);
             }
         }
 
-        /* Dark mode styles */
-        .dark .product-image {
-            border-color: hsl(var(--border));
+        /* Smooth scrollbar */
+        .products-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .products-container::-webkit-scrollbar-track {
+            background: hsl(var(--muted));
+        }
+
+        .products-container::-webkit-scrollbar-thumb {
+            background: hsl(var(--border));
+            border-radius: 3px;
+        }
+
+        .products-container::-webkit-scrollbar-thumb:hover {
+            background: hsl(var(--muted-foreground));
         }
     </style>
 </head>
@@ -459,10 +457,10 @@
             <a href="index.html" class="nav-link">
                 <i class="fas fa-receipt"></i> ออร์เดอร์
             </a>
-            <a href="products.html" class="nav-link">
+            <a href="products.html" class="nav-link active">
                 <i class="fas fa-box"></i> สินค้า
             </a>
-            <a href="product.html" class="nav-link active">
+            <a href="product.html" class="nav-link">
                 <i class="fas fa-search"></i> ค้นหาสินค้า
             </a>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -473,25 +471,29 @@
 
     <div class="container">
         <div class="header">
-            <h1>รายละเอียดสินค้า</h1>
-            <p>Product Details</p>
+            <h1>รายการสินค้า</h1>
+            <p>Products List</p>
         </div>
 
         <div class="controls-section">
-            <div class="input-group">
-                <input type="text" class="input" id="productId" placeholder="ใส่ Product ID (เช่น 4470522)">
-                <button class="btn btn-primary" onclick="loadProduct()">
+            <div class="search-controls">
+                <input type="text" class="input" id="searchKeyword" placeholder="ค้นหาสินค้า (เช่น kexcelled)">
+                <button class="btn btn-primary" onclick="searchProducts()">
                     <i class="fas fa-search" style="margin-right: 0.5rem;"></i>
                     ค้นหา
                 </button>
             </div>
+            <button class="btn btn-secondary" onclick="loadAllProducts()" style="width: 100%;">
+                <i class="fas fa-list" style="margin-right: 0.5rem;"></i>
+                แสดงสินค้าทั้งหมด (20 รายการ)
+            </button>
         </div>
 
         <div id="content">
             <div class="no-data">
-                <i class="fas fa-cube"></i>
+                <i class="fas fa-boxes"></i>
                 <h3>ยังไม่มีข้อมูลสินค้า</h3>
-                <p>กรุณาใส่ Product ID และคลิกค้นหาเพื่อดูรายละเอียดสินค้า</p>
+                <p>กรุณาค้นหาหรือแสดงสินค้าทั้งหมดเพื่อดูรายการสินค้า</p>
             </div>
         </div>
     </div>
@@ -536,88 +538,58 @@
             }).format(amount);
         }
 
-        function createProductDisplay(product) {
-            const variants = product.variant ? product.variant.map(v => `
-                <div class="variant-item">
-                    <span class="variant-name">${v.variantname}:</span>
-                    <span class="variant-value">${v.name}</span>
-                </div>
-            `).join('') : '';
-
-            const tags = product.tag ? product.tag.map(tag => `
-                <span class="tag">#${tag}</span>
-            `).join('') : '';
-
+        function createProductCard(product) {
             return `
-                <div class="product-details">
-                    <img src="${product.imagepath}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzlhOWE5YSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
-                    
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-description">${product.description || 'ไม่มีคำอธิบาย'}</div>
-                    
-                    <div class="price-section">
-                        <div class="price-item">
-                            <div class="price-label">ราคาขาย</div>
+                <div class="product-card" onclick="viewProduct(${product.id})">
+                    <div class="product-header">
+                        <img src="${product.imagepath || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM5YTlhOWEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2YzZjRmNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9IiM5YTlhOWEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4='">
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-sku">SKU: ${product.sku}</div>
+                            <div class="product-category">${product.category || 'ไม่ระบุหมวดหมู่'}</div>
+                        </div>
+                        <div class="product-price">
                             <div class="price-value">${formatCurrency(product.sellprice)}</div>
                         </div>
-                        <div class="price-item">
-                            <div class="price-label">ราคาทุน</div>
-                            <div class="price-value">${formatCurrency(product.purchaseprice)}</div>
+                    </div>
+                    <div class="stock-info">
+                        <div class="stock-item">
+                            <div class="stock-label">สต็อก</div>
+                            <div class="stock-value">${product.stock} ${product.unittext || 'ชิ้น'}</div>
+                        </div>
+                        <div class="stock-item">
+                            <div class="stock-label">พร้อมขาย</div>
+                            <div class="stock-value">${product.availablestock} ${product.unittext || 'ชิ้น'}</div>
+                        </div>
+                        <div class="stock-item">
+                            <div class="stock-label">น้ำหนัก</div>
+                            <div class="stock-value">${product.weight || '0'} กรัม</div>
                         </div>
                     </div>
-                    
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-label">SKU</div>
-                            <div class="info-value">${product.sku}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">หมวดหมู่</div>
-                            <div class="info-value">${product.category}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">สต็อก</div>
-                            <div class="info-value">${product.stock} ${product.unittext}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">พร้อมขาย</div>
-                            <div class="info-value">${product.availablestock} ${product.unittext}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">น้ำหนัก</div>
-                            <div class="info-value">${product.weight} กรัม</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">ขนาด (D×W×H)</div>
-                            <div class="info-value">${product.length}×${product.width}×${product.height} ซม.</div>
-                        </div>
-                    </div>
-                    
-                    ${variants ? `
-                        <div class="variants-section">
-                            <div class="section-title"><i class="fas fa-palette" style="margin-right: 0.5rem;"></i>ตัวเลือกสินค้า</div>
-                            ${variants}
-                        </div>
-                    ` : ''}
-                    
-                    ${tags ? `
-                        <div class="tags-section">
-                            <div class="section-title"><i class="fas fa-tags" style="margin-right: 0.5rem;"></i>แท็ก</div>
-                            ${tags}
-                        </div>
-                    ` : ''}
                 </div>
             `;
         }
 
-        async function loadProduct() {
-            const productId = document.getElementById('productId').value.trim();
+        function viewProduct(productId) {
+            window.location.href = `product.html?id=${productId}`;
+        }
+
+        async function searchProducts() {
+            const keyword = document.getElementById('searchKeyword').value.trim();
             
-            if (!productId) {
-                showError('กรุณาใส่ Product ID');
+            if (!keyword) {
+                showError('กรุณาใส่คำค้นหา');
                 return;
             }
 
+            await loadProducts(keyword);
+        }
+
+        async function loadAllProducts() {
+            await loadProducts('');
+        }
+
+        async function loadProducts(keyword = '') {
             const content = document.getElementById('content');
             content.innerHTML = `
                 <div class="loading">
@@ -627,7 +599,12 @@
             `;
 
             try {
-                const response = await fetch(`/api/product/${productId}`, {
+                let url = '/api/products?limit=20';
+                if (keyword) {
+                    url += `&keyword=${encodeURIComponent(keyword)}`;
+                }
+
+                const response = await fetch(url, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
@@ -637,20 +614,42 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    displayProduct(data.product);
+                    displayProducts(data.products, keyword);
                 } else {
-                    throw new Error(data.message || 'ไม่พบข้อมูลสินค้า');
+                    throw new Error(data.message || 'ไม่สามารถดึงข้อมูลสินค้าได้');
                 }
 
             } catch (error) {
-                console.error('Error loading product:', error);
+                console.error('Error loading products:', error);
                 showError(`เกิดข้อผิดพลาด: ${error.message}`);
             }
         }
 
-        function displayProduct(product) {
+        function displayProducts(products, keyword = '') {
             const content = document.getElementById('content');
-            content.innerHTML = createProductDisplay(product);
+            
+            if (products.length === 0) {
+                content.innerHTML = `
+                    <div class="no-data">
+                        <i class="fas fa-search"></i>
+                        <h3>ไม่พบสินค้า</h3>
+                        <p>${keyword ? `ไม่พบสินค้าที่ค้นหา "${keyword}"` : 'ไม่พบข้อมูลสินค้า'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const resultsInfo = keyword 
+                ? `พบ ${products.length} สินค้าจากการค้นหา "${keyword}"`
+                : `แสดงสินค้าทั้งหมด ${products.length} รายการ`;
+
+            const productsHTML = products.map(product => createProductCard(product)).join('');
+            content.innerHTML = `
+                <div class="products-container">
+                    <div class="results-info">${resultsInfo}</div>
+                    ${productsHTML}
+                </div>
+            `;
         }
 
         function showError(message) {
@@ -663,10 +662,10 @@
             `;
         }
 
-        // Handle Enter key in input field
-        document.getElementById('productId').addEventListener('keypress', function(e) {
+        // Handle Enter key in search input
+        document.getElementById('searchKeyword').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                loadProduct();
+                searchProducts();
             }
         });
 
@@ -674,12 +673,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             initTheme();
             
-            // Check for product ID in URL parameters
+            // Check for search keyword in URL parameters
             const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-            if (productId) {
-                document.getElementById('productId').value = productId;
-                loadProduct();
+            const keyword = urlParams.get('keyword');
+            if (keyword) {
+                document.getElementById('searchKeyword').value = keyword;
+                searchProducts();
             }
         });
     </script>

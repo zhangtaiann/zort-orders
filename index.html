@@ -362,10 +362,46 @@
             border-top: 1px solid hsl(var(--border));
         }
 
+        .navbar {
+            background-color: hsl(var(--background));
+            border-bottom: 1px solid hsl(var(--border));
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: hsl(var(--muted-foreground));
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            transition: all 0.2s ease-in-out;
+            font-size: 0.875rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: hsl(var(--foreground));
+            background-color: hsl(var(--muted));
+        }
+
         .theme-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
             background-color: hsl(var(--secondary));
             color: hsl(var(--secondary-foreground));
             border: 1px solid hsl(var(--border));
@@ -394,6 +430,19 @@
                 min-height: 100vh;
             }
             
+            .navbar {
+                padding: 0.5rem 1rem;
+            }
+            
+            .navbar-nav {
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+            
             .order-card {
                 padding: 0.75rem;
                 margin-bottom: 0.5rem;
@@ -410,8 +459,7 @@
             }
 
             .theme-toggle {
-                top: 0.5rem;
-                right: 0.5rem;
+                padding: 0.4rem;
             }
         }
 
@@ -444,11 +492,26 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">Dashboard</a>
+        <div class="navbar-nav">
+            <a href="index.html" class="nav-link active">
+                <i class="fas fa-receipt"></i> ออร์เดอร์
+            </a>
+            <a href="products.html" class="nav-link">
+                <i class="fas fa-box"></i> สินค้า
+            </a>
+            <a href="product.html" class="nav-link">
+                <i class="fas fa-search"></i> ค้นหาสินค้า
+            </a>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                 <i class="fas fa-sun"></i>
             </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
             <h1>รายการขาย</h1>
             <p>Sales Orders Dashboard</p>
         </div>
