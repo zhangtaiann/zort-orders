@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="th" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดสินค้า - Product Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96%;
+            --secondary-foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 96%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96%;
+            --accent-foreground: 222.2 84% 4.9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --radius: 0.5rem;
+        }
+
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222.2 84% 4.9%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 210 40% 98%;
+            --primary-foreground: 222.2 47.4% 11.2%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 212.7 26.8% 83.9%;
+        }
+
+        * {
+            border-color: hsl(var(--border));
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 28rem;
+            margin: 0 auto;
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: calc(var(--radius) + 2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid hsl(var(--border));
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 0.875rem;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-button:hover {
+            background-color: hsl(var(--secondary) / 0.8);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .theme-toggle:hover {
+            background-color: hsl(var(--secondary) / 0.8);
+        }
+
+        .controls-section {
+            background-color: hsl(var(--muted));
+            padding: 1.5rem;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            font-size: 0.875rem;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: hsl(var(--ring));
+            box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid transparent;
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+        }
+
+        .btn-primary {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            border-color: hsl(var(--primary));
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: hsl(var(--primary) / 0.9);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 2px solid hsl(var(--muted));
+            border-top: 2px solid hsl(var(--primary));
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .product-details {
+            padding: 1.5rem;
+        }
+
+        .product-image {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            border: 1px solid hsl(var(--border));
+        }
+
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: hsl(var(--foreground));
+        }
+
+        .product-description {
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .price-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: hsl(var(--muted));
+            border-radius: var(--radius);
+        }
+
+        .price-item {
+            text-align: center;
+        }
+
+        .price-label {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 0.25rem;
+        }
+
+        .price-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: hsl(var(--foreground));
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            background-color: hsl(var(--muted));
+            padding: 0.75rem;
+            border-radius: var(--radius);
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: hsl(var(--foreground));
+        }
+
+        .variants-section {
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: hsl(var(--foreground));
+        }
+
+        .variant-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            background-color: hsl(var(--muted));
+            border-radius: calc(var(--radius) / 2);
+            margin-bottom: 0.25rem;
+        }
+
+        .variant-name {
+            font-weight: 500;
+            color: hsl(var(--foreground));
+        }
+
+        .variant-value {
+            color: hsl(var(--muted-foreground));
+        }
+
+        .tags-section {
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: hsl(var(--primary) / 0.1);
+            color: hsl(var(--primary));
+            padding: 0.25rem 0.5rem;
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert {
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin: 1.5rem;
+        }
+
+        .alert-destructive {
+            border-color: hsl(var(--destructive) / 0.5);
+            background-color: hsl(var(--destructive) / 0.1);
+            color: hsl(var(--destructive));
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .no-data i {
+            font-size: 3.75rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .no-data h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: hsl(var(--foreground));
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            
+            .container {
+                max-width: 100vw;
+                margin: 0;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+                min-height: 100vh;
+            }
+            
+            .theme-toggle {
+                top: 0.5rem;
+                right: 0.5rem;
+                padding: 0.4rem;
+            }
+            
+            .back-button {
+                left: 0.5rem;
+                padding: 0.4rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Dark mode styles */
+        .dark .product-image {
+            border-color: hsl(var(--border));
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-button" aria-label="Back to orders">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <i class="fas fa-sun"></i>
+            </button>
+            <h1>รายละเอียดสินค้า</h1>
+            <p>Product Details</p>
+        </div>
+
+        <div class="controls-section">
+            <div class="input-group">
+                <input type="text" class="input" id="productId" placeholder="ใส่ Product ID (เช่น 4470522)">
+                <button class="btn btn-primary" onclick="loadProduct()">
+                    <i class="fas fa-search" style="margin-right: 0.5rem;"></i>
+                    ค้นหา
+                </button>
+            </div>
+        </div>
+
+        <div id="content">
+            <div class="no-data">
+                <i class="fas fa-cube"></i>
+                <h3>ยังไม่มีข้อมูลสินค้า</h3>
+                <p>กรุณาใส่ Product ID และคลิกค้นหาเพื่อดูรายละเอียดสินค้า</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.classList.remove(currentTheme);
+            html.classList.add(newTheme);
+            
+            // Save theme preference
+            localStorage.setItem('theme', newTheme);
+            
+            // Update icon
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.querySelector('.theme-toggle i');
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-moon';
+            } else {
+                themeIcon.className = 'fas fa-sun';
+            }
+        }
+
+        // Initialize theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.classList.add(savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('th-TH', {
+                style: 'currency',
+                currency: 'THB'
+            }).format(amount);
+        }
+
+        function createProductDisplay(product) {
+            const variants = product.variant ? product.variant.map(v => `
+                <div class="variant-item">
+                    <span class="variant-name">${v.variantname}:</span>
+                    <span class="variant-value">${v.name}</span>
+                </div>
+            `).join('') : '';
+
+            const tags = product.tag ? product.tag.map(tag => `
+                <span class="tag">#${tag}</span>
+            `).join('') : '';
+
+            return `
+                <div class="product-details">
+                    <img src="${product.imagepath}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzlhOWE5YSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
+                    
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-description">${product.description || 'ไม่มีคำอธิบาย'}</div>
+                    
+                    <div class="price-section">
+                        <div class="price-item">
+                            <div class="price-label">ราคาขาย</div>
+                            <div class="price-value">${formatCurrency(product.sellprice)}</div>
+                        </div>
+                        <div class="price-item">
+                            <div class="price-label">ราคาทุน</div>
+                            <div class="price-value">${formatCurrency(product.purchaseprice)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">SKU</div>
+                            <div class="info-value">${product.sku}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">หมวดหมู่</div>
+                            <div class="info-value">${product.category}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">สต็อก</div>
+                            <div class="info-value">${product.stock} ${product.unittext}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">พร้อมขาย</div>
+                            <div class="info-value">${product.availablestock} ${product.unittext}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">น้ำหนัก</div>
+                            <div class="info-value">${product.weight} กรัม</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">ขนาด (D×W×H)</div>
+                            <div class="info-value">${product.length}×${product.width}×${product.height} ซม.</div>
+                        </div>
+                    </div>
+                    
+                    ${variants ? `
+                        <div class="variants-section">
+                            <div class="section-title"><i class="fas fa-palette" style="margin-right: 0.5rem;"></i>ตัวเลือกสินค้า</div>
+                            ${variants}
+                        </div>
+                    ` : ''}
+                    
+                    ${tags ? `
+                        <div class="tags-section">
+                            <div class="section-title"><i class="fas fa-tags" style="margin-right: 0.5rem;"></i>แท็ก</div>
+                            ${tags}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        async function loadProduct() {
+            const productId = document.getElementById('productId').value.trim();
+            
+            if (!productId) {
+                showError('กรุณาใส่ Product ID');
+                return;
+            }
+
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>กำลังโหลดข้อมูลสินค้า...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`/api/product/${productId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    displayProduct(data.product);
+                } else {
+                    throw new Error(data.message || 'ไม่พบข้อมูลสินค้า');
+                }
+
+            } catch (error) {
+                console.error('Error loading product:', error);
+                showError(`เกิดข้อผิดพลาด: ${error.message}`);
+            }
+        }
+
+        function displayProduct(product) {
+            const content = document.getElementById('content');
+            content.innerHTML = createProductDisplay(product);
+        }
+
+        function showError(message) {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="alert alert-destructive">
+                    <strong>⚠️ เกิดข้อผิดพลาด</strong><br>
+                    ${message}
+                </div>
+            `;
+        }
+
+        // Handle Enter key in input field
+        document.getElementById('productId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadProduct();
+            }
+        });
+
+        // Initialize theme
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            
+            // Check for product ID in URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            if (productId) {
+                document.getElementById('productId').value = productId;
+                loadProduct();
+            }
+        });
+    </script>
+</body>
+</html>
