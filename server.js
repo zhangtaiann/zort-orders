@@ -146,9 +146,16 @@ app.get('/api/orders', async (req, res) => {
 });
 
 // API endpoint to get product details
-app.get('/api/product/:id', async (req, res) => {
+app.get('/api/product', async (req, res) => {
     try {
-        const productId = req.params.id;
+        const productId = req.query.id;
+        
+        if (!productId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Product ID is required'
+            });
+        }
         console.log(`📡 Fetching product details for ID: ${productId}`);
         
         // Zortout API URL for product details
