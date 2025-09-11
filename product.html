@@ -627,7 +627,7 @@
             `;
 
             try {
-                const response = await fetch(`/api/product/${productId}`, {
+                const response = await fetch(`/api/product?id=${productId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
