@@ -181,12 +181,23 @@ app.get('/api/product', async (req, res) => {
         
         const data = response.data;
         
+        // Check if response has the standard res wrapper or direct product data
         if (data.res && data.res.resCode === "200" && data.product) {
+            // Standard format with res wrapper
             console.log(`✅ Successfully fetched product: ${data.product.name}`);
             
             res.json({
                 success: true,
                 product: data.product,
+                timestamp: new Date().toISOString()
+            });
+        } else if (data.id && data.name) {
+            // Direct product format (GetProductDetail returns product directly)
+            console.log(`✅ Successfully fetched product: ${data.name}`);
+            
+            res.json({
+                success: true,
+                product: data,
                 timestamp: new Date().toISOString()
             });
         } else {
