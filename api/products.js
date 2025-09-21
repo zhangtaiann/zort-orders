@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         // Get API credentials from environment variables
         const storename = process.env.STORENAME;
         const apikey = process.env.APIKEY;
-        const apisecret = process.env.APISECRET || process.env.PISECRET;
+        const apisecret = process.env.APISECRET;
 
         // Validate environment variables
         if (!storename || !apikey || !apisecret) {
