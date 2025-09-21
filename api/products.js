@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         // Get API credentials from environment variables
         const storename = process.env.STORENAME;
         const apikey = process.env.APIKEY;
-        const apisecret = process.env.APISECRET;
+        const apisecret = process.env.APISECRET || process.env.PISECRET;
 
         // Validate environment variables
         if (!storename || !apikey || !apisecret) {
@@ -37,7 +37,10 @@ export default async function handler(req, res) {
         console.log(`📡 Fetching products list${keyword ? ` with keyword: "${keyword}"` : ''}`);
 
         // Zortout API URL for products list
-        let apiUrl = `https://open-api.zortout.com/v4/Product/GetProducts?limit=20&keyword=kexcelled`;
+        let apiUrl = `https://open-api.zortout.com/v4/Product/GetProducts?limit=${limit}`;
+        if (keyword) {
+            apiUrl += `&keyword=${encodeURIComponent(keyword)}`;
+        }
         
         const response = await fetch(apiUrl, {
             method: 'GET',
