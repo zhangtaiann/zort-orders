@@ -19,6 +19,14 @@ npm test
 # or
 node test-connection.js
 
+# Test products API specifically
+npm run test:products
+# or
+node test-products-api.js
+
+# Test product detail API
+node test-product-detail.js
+
 # Start the server directly
 node server.js
 ```
@@ -32,26 +40,48 @@ node server.js
 - **CORS handling** for cross-origin requests
 - **Environment variable validation** with startup checks
 
-### Frontend (index.html)
-- **Single-page application** with embedded CSS and JavaScript
-- **Responsive design** with mobile-first approach
-- **Theme switching** (light/dark mode with localStorage persistence)
-- **Auto-refresh functionality** (5-minute intervals)
-- **Real-time statistics** showing order counts and payment status
+### Frontend Applications
+The application consists of three main HTML pages:
+1. **index.html** - Sales Orders Dashboard (main page)
+   - Real-time order statistics and listing
+   - Theme switching (light/dark mode with localStorage persistence)
+   - Auto-refresh functionality
+   - Responsive design with mobile-first approach
+
+2. **products.html** - Products List Page
+   - Product search functionality with keyword filtering
+   - Product grid display with images and details
+   - Pagination and filtering capabilities
+
+3. **product.html** - Product Detail Search Page
+   - Individual product detail lookup by ID
+   - Comprehensive product information display
 
 ### API Structure
 The application has dual API implementations:
-1. **Express routes** in `server.js` (`/api/orders`, `/api/health`)
-2. **Serverless function** in `api/orders.js` (for deployment platforms like Vercel)
+
+#### Express Routes (server.js)
+- `/api/orders` - Fetch sales orders with filtering
+- `/api/products` - Get products list with search
+- `/api/product` - Get individual product details by ID
+- `/api/health` - Health check endpoint
+
+#### Serverless Functions (api/ directory)
+- `api/orders.js` - Orders endpoint for Vercel deployment
+- `api/products.js` - Products list endpoint
+- `api/product.js` - Product detail endpoint
 
 ### Environment Configuration
 Required environment variables in `.env`:
 - `STORENAME` - Zortout store identifier
 - `APIKEY` - Zortout API key  
-- `APISECRET` - Zortout API secret
+- `APISECRET` - Zortout API secret (used in server.js)
 - `PORT` - Server port (optional, defaults to 3000)
 
-**Note**: There's an inconsistency in variable naming - `server.js` uses `APISECRET` while `test-connection.js` and `api/orders.js` use `PISECRET`. Check which format your environment uses.
+**Important**: There's an inconsistency in variable naming:
+- `server.js` and `test-products-api.js` use `APISECRET`
+- `test-connection.js` uses `PISECRET`
+- Verify which format your environment uses before testing
 
 ## Key Features
 
@@ -72,11 +102,27 @@ Required environment variables in `.env`:
 
 ## Testing
 
-Use `test-connection.js` to verify:
-- Environment variables are properly configured
-- API credentials are valid
-- Zortout API is accessible
-- Sample data can be retrieved
+### Test Scripts Available:
+1. **test-connection.js** (`npm test`)
+   - Tests orders API connectivity
+   - Validates environment variables
+   - Uses `PISECRET` variable name
+   - 10-second timeout for requests
+
+2. **test-products-api.js** (`npm run test:products`)
+   - Tests products API endpoints
+   - Tests both general product listing and keyword search
+   - Uses `APISECRET` variable name
+   - Shows sample product data
+
+3. **test-product-detail.js**
+   - Tests individual product detail API
+   - Requires manual execution with product ID
+
+### Zortout API Endpoints Tested:
+- `GetOrders` - Fetch sales orders with status and payment filters
+- `GetProducts` - List products with optional keyword search
+- `GetProductDetail` - Individual product details by ID
 
 ## Deployment Notes
 
@@ -84,3 +130,5 @@ Use `test-connection.js` to verify:
 - Static files are served directly from the root directory
 - No build process required - vanilla HTML/CSS/JavaScript
 - All dependencies are runtime dependencies (Express, dotenv)
+- For serverless deployment, use the `api/` directory functions
+- For Express deployment, use `server.js` with the same API routes

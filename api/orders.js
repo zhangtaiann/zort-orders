@@ -62,11 +62,13 @@ export default async function handler(req, res) {
                 status: order.status,
                 paymentstatus: order.paymentstatus,
                 saleschannel: order.saleschannel,
+                shippingchannel: order.shippingchannel,
                 amount: order.amount,
                 orderdate: order.orderdate,
                 customername: order.customername ? order.customername.replace(/(.{1}).*(.{1})/, '$1***$2') : '',
                 list: order.list.map(product => ({
                     id: product.id,
+                    productid: product.productid,
                     name: product.name,
                     number: product.number,
                     unittext: product.unittext,

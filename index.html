@@ -320,6 +320,36 @@
             font-size: 0.75rem;
         }
 
+        .product-image {
+            width: 40px;
+            height: 40px;
+            border-radius: calc(var(--radius) / 2);
+            object-fit: cover;
+            border: 1px solid hsl(var(--border));
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .product-image-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: calc(var(--radius) / 2);
+            background-color: hsl(var(--muted));
+            border: 1px solid hsl(var(--border));
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.75rem;
+        }
+
+        .product-details {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
         .alert {
             border: 1px solid hsl(var(--border));
             border-radius: var(--radius);
@@ -632,13 +662,77 @@
             }).format(amount);
         }
 
-        function createOrderCard(order) {
-            const products = order.list.map(product => `
-                <div class="product-item" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-qty" style="font-weight: bold;border: 1px solid hsl(var(--border)); padding: 0.25rem 0.5rem; border-radius: calc(var(--radius) / 2); background-color: hsl(var(--background)); font-size: 0.75rem;color: #000000">${product.number}</div>
-                </div>
-            `).join('');
+        // Cache for product details to avoid duplicate API calls
+        const productCache = new Map();
+
+        async function fetchProductDetail(productId) {
+            console.log(productId);
+            if (productCache.has(productId)) {
+                return productCache.get(productId);
+            }
+
+            try {
+                const response = await fetch(`/api/product?id=${productId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.product) {
+                        productCache.set(productId, data.product);
+                        return data.product;
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.error(`Error fetching product ${productId}:`, error);
+                return null;
+            }
+        }
+
+        async function createOrderCard(order) {
+            // Create initial product HTML with placeholders
+            let productsHTML = '';
+            
+            for (const product of order.list) {
+                const productId = `product-${order.id}-${product.productid}`;
+                productsHTML += `
+                    <div class="product-item" style="display: flex; align-items: center;" id="${productId}">
+                        <div class="product-image-placeholder">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="product-details">
+                            <div class="product-name">${product.name}</div>
+                        </div>
+                        <div class="product-qty" style="font-weight: bold;border: 1px solid hsl(var(--border)); padding: 0.25rem 0.5rem; border-radius: calc(var(--radius) / 2); background-color: hsl(var(--background)); font-size: 0.75rem;color: #000000">${product.number}</div>
+                    </div>
+                `;
+            }
+            
+            // Fetch product details asynchronously for images
+            setTimeout(async () => {
+                for (const product of order.list) {
+                    const productDetail = await fetchProductDetail(product.productid);
+                    console.log(productDetail);
+                    const productElement = document.getElementById(`product-${order.id}-${product.productid}`);
+                    
+                    if (productElement && productDetail) {
+                        const placeholderElement = productElement.querySelector('.product-image-placeholder');
+                        if (placeholderElement && productDetail.imagepath) {
+                            placeholderElement.outerHTML = `
+                                <img class="product-image" 
+                                     src="${productDetail.imagepath}" 
+                                     alt="${product.name}"
+                                     onerror="this.outerHTML='<div class=\\'product-image-placeholder\\'><i class=\\'fas fa-image\\'></i></div>'"
+                                />
+                            `;
+                        }
+                    }
+                }
+            }, 100);
 
             return `
                 <div class="order-card">
@@ -655,6 +749,11 @@
                             <span class="info-value">${order.saleschannel}</span>
                         </div>
                         <div class="info-row">
+                            <span class="info-label">ช่องทางจัดส่ง:</span>
+                            <span class="info-value">${order.shippingchannel}</span>
+                        </div>
+  
+                        <div class="info-row">
                             <span class="info-label">ยอดรวม:</span>
                             <span class="info-value">${formatCurrency(order.amount)}</span>
                         </div>
@@ -665,7 +764,7 @@
                     </div>
                     <div class="products-section">
                         <div class="products-title"><i class="fas fa-shopping-bag" style="margin-right: 0.5rem;"></i>สินค้า:</div>
-                        ${products}
+                        ${productsHTML}
                     </div>
                 </div>
             `;
@@ -714,7 +813,7 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    displayOrders(data.orders);
+                    await displayOrders(data.orders);
                     updateStats(data.orders);
                     updateLastUpdated();
                     dataLoaded = true;
@@ -728,7 +827,7 @@
             }
         }
 
-        function displayOrders(orders) {
+        async function displayOrders(orders) {
             const content = document.getElementById('content');
             
             if (orders.length === 0) {
@@ -742,10 +841,10 @@
                 return;
             }
 
-            const ordersHTML = orders.map(order => createOrderCard(order)).join('');
+            const ordersHTML = await Promise.all(orders.map(order => createOrderCard(order)));
             content.innerHTML = `
                 <div class="orders-container">
-                    ${ordersHTML}
+                    ${ordersHTML.join('')}
                 </div>
             `;
         }
