@@ -291,13 +291,7 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Handle 404
-app.use('*', (req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Endpoint not found'
-    });
-});
+
 
 // Start server
 app.listen(PORT, () => {
